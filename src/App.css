@@ -1,0 +1,18 @@
+.banner {
+  text-align: center;
+  background-color: #eff185;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: rgb(0, 0, 0);
+}
+
+.crossword {
+  text-align: left;
+  align-items: center;
+  justify-content: center;
+}
+
+.clues-container-down h2{
+  color: rgb(255, 255, 255);
+}
