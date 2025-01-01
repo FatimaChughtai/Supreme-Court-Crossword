@@ -1,7 +1,7 @@
 import './App.css';
 import React, {useState} from 'react';
-import { CrosswordProvider, CrosswordGrid, DirectionClues } from '@jaredreisinger/react-crossword';
-import { Grid2, Alert, Snackbar} from '@mui/material';
+import { CrosswordProvider, CrosswordGrid, DirectionClues, ThemeProvider } from '@jaredreisinger/react-crossword';
+import { Grid2, Alert, Snackbar, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography} from '@mui/material';
 
 const data = {
     across: {
@@ -635,10 +635,11 @@ const data = {
 };
 
 function App() {
-  const [correct, setCorrect] = useState(false);
+  const [correct, setCorrect] = useState({}); // Track cell correctness
   const [complete, setComplete] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [openAlert, setOpenAlert] = useState(false);
+  const [openPopup, setOpenPopup] = useState(true); // Popup state
 
   const handleCorrect = (direction, number, answer) => {
     setAlertMessage(`Correct: ${direction} ${number} - ${answer}`);
@@ -647,8 +648,11 @@ function App() {
 
   const handleComplete = (isCorrect) => {
     setComplete(true);
-    setCorrect(isCorrect);
     console.log(`Crossword Complete: ${isCorrect ? 'All correct!' : 'Some answers are wrong.'}`);
+  };
+
+  const handleClosePopup = () => {
+    setOpenPopup(false);
   };
 
   const getCorrectAnswer = (row, col, direction) => {
@@ -689,19 +693,66 @@ function App() {
       (correctDown && char === correctDown);
   
     if (isCorrect) {
+      setCorrect(true);
       console.log(`Cell (${row}, ${col}) input "${char}" is correct!`);
     } else {
+      setCorrect(false);
       console.log(`Cell (${row}, ${col}) input "${char}" is incorrect.`);
-      
     }
   };  
   
+  const theme = {
+    allowNonSquare: true,
+    columnBreakpoint: '9999px',
+    gridBackground: '#000',
+    cellBackground: '#fff',
+    cellBorder: '#000',
+    textColor: '#000',
+    numberColor: '#000',
+    focusBackground: correct ? '#d6d851' : '#f00',
+    highlightBackground: correct ? '#eff185' : '#f99',
+  };
+
   return (
     <div className="main">
+      
+      <Dialog
+        open={openPopup}
+        onClose={handleClosePopup}
+        aria-labelledby="welcome-dialog-title"
+        aria-describedby="welcome-dialog-description"
+        PaperProps={{
+          style: { borderRadius: 15, padding: '20px', textAlign: 'center' },
+        }}
+      >
+        <DialogTitle id="welcome-dialog-title" style={{ fontFamily: 'Comic Sans', color: '#4caf50', fontSize: '36px' }}>
+          🎁 MERRY CHRISTMAS 🎉
+        </DialogTitle>
+        <DialogContent>
+          <Typography id="welcome-dialog-description" variant="body1" style={{ fontFamily: 'Comic Sans', color: '#333' }}>
+            I know you like crosswords, so enjoy this goofy ass crossword I made! I will give you a warning that some of the words are insane
+            and like no shot you would guess them. BUT, you are literally HIM so I think you will be fine 😊 (Sorry that the gift was delayed,
+            also sorry if it has random lil bugs I will fix em inshallah)
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleClosePopup}
+            variant="contained"
+            color="primary"
+            style={{ borderRadius: 20, textTransform: 'none', backgroundColor: '#ff4081' }}
+          >
+            GET ER DONE!
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
       <div className="banner">
-        <h1>Shailee's Crossword</h1>
+        <h1>The Supreme Court's Crossword</h1>
       </div>
       <div className="crossword">
+        <ThemeProvider theme={theme}>
         <CrosswordProvider data={data} onCorrect={handleCorrect} onCrosswordComplete={handleComplete} onCellChange={handleCellChange}>
           <Grid2 container spacing={2}>
             <Grid2 size={5}>
@@ -723,6 +774,7 @@ function App() {
             </Grid2>
           </Grid2>
         </CrosswordProvider>
+        </ThemeProvider>
 
         {/* Does the checking if each of the clues are correct or not */}
         <Snackbar open={openAlert} autoHideDuration={5000} onClose={() => setOpenAlert(false)} >
