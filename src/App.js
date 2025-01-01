@@ -635,23 +635,12 @@ const data = {
 };
 
 function App() {
-  const [answers, setAnswers] = useState({}); // Track the answers entered by the user
   const [correct, setCorrect] = useState(false);
   const [complete, setComplete] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [openAlert, setOpenAlert] = useState(false);
 
-  const handleChange = (direction, number, answer) => {
-    // Update the user's input for each clue
-    setAnswers((prevAnswers) => ({
-      ...prevAnswers,
-      [`${direction}-${number}`]: answer,
-    }));
-  };
-
   const handleCorrect = (direction, number, answer) => {
-    // If you want to show a confirmation message on correct answers
-    console.log(`Correct: ${direction} ${number} - ${answer}`);
     setAlertMessage(`Correct: ${direction} ${number} - ${answer}`);
     setOpenAlert(true); // Show the alert
   };
@@ -662,17 +651,62 @@ function App() {
     console.log(`Crossword Complete: ${isCorrect ? 'All correct!' : 'Some answers are wrong.'}`);
   };
 
+  const getCorrectAnswer = (row, col, direction) => {
+    const clues = data[direction]; // Select clues based on direction ('across' or 'down')
+  
+    // Find the clue that includes the given (row, col)
+    for (const clueNumber in clues) {
+      const clue = clues[clueNumber];
+      const { answer, row: clueStartRow, col: clueStartCol } = clue;
+  
+      if (direction === "across") {
+        // Check if the cell falls within the range of the across clue
+        if (clueStartRow === row && col >= clueStartCol && col < clueStartCol + answer.length) {
+          const charIndex = col - clueStartCol;
+          console.log(answer[charIndex]);
+          return answer[charIndex]; // Return the correct character
+        }
+      } else if (direction === "down") {
+        // Check if the cell falls within the range of the down clue
+        if (clueStartCol === col && row >= clueStartRow && row < clueStartRow + answer.length) {
+          const charIndex = row - clueStartRow;
+          console.log(answer[charIndex]);
+          return answer[charIndex]; // Return the correct character
+        }
+      }
+    }
+    return null; // Return null if no clue matches the cell
+  };
+
+  const handleCellChange = (row, col, char) => {
+    // Check correctness for the cell in both directions: across and down
+    const correctAcross = getCorrectAnswer(row, col, "across");
+    const correctDown = getCorrectAnswer(row, col, "down");
+  
+    // Determine if the input character matches either direction
+    const isCorrect =
+      (correctAcross && char === correctAcross) ||
+      (correctDown && char === correctDown);
+  
+    if (isCorrect) {
+      console.log(`Cell (${row}, ${col}) input "${char}" is correct!`);
+    } else {
+      console.log(`Cell (${row}, ${col}) input "${char}" is incorrect.`);
+      
+    }
+  };  
+  
   return (
     <div className="main">
       <div className="banner">
         <h1>Shailee's Crossword</h1>
       </div>
       <div className="crossword">
-        <CrosswordProvider data={data} onCorrect={handleCorrect} onCrosswordComplete={handleComplete}>
+        <CrosswordProvider data={data} onCorrect={handleCorrect} onCrosswordComplete={handleComplete} onCellChange={handleCellChange}>
           <Grid2 container spacing={2}>
             <Grid2 size={5}>
-              <div className="grid-container" style={{ width: '60em', borderLeft: '50px solid white' }}>
-                <CrosswordGrid onChange={handleChange} />
+              <div className="grid-container" style={{ width: '35em', borderLeft: '30px solid white' }}>
+                <CrosswordGrid />
               </div>
             </Grid2>
             <Grid2 size={3}>
@@ -681,7 +715,7 @@ function App() {
                 <DirectionClues direction="across" />
               </div>
             </Grid2>
-            <Grid2 size={4}>
+            <Grid2 size={3}>
               <div className="clues-container-down">
                 <h2>Down Clues</h2>
                 <DirectionClues direction="down" />
@@ -692,14 +726,10 @@ function App() {
 
         {/* Does the checking if each of the clues are correct or not */}
         <Snackbar open={openAlert} autoHideDuration={5000} onClose={() => setOpenAlert(false)} >
-          <Alert onClose={() => setOpenAlert(false)} severity={alertMessage.startsWith('Correct') ? 'success' : 'error'}> {alertMessage} </Alert>
+          <Alert onClose={() => setOpenAlert(false)} severity={alertMessage.startsWith('Correct') ? 'success' : 'error'}>
+            {alertMessage}
+          </Alert>
         </Snackbar>
-
-        <div className="results">
-          {complete && (
-            <h3>{correct ? 'Congratulations! All answers are correct!' : 'Some answers are incorrect. Keep trying!'}</h3>
-          )}
-        </div>
       </div>
     </div>
   );
