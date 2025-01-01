@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/static/css/main.3c0fb2b4.css",
-    "main.js": "/static/js/main.a71e4dd2.js",
-    "index.html": "/index.html",
-    "main.3c0fb2b4.css.map": "/static/css/main.3c0fb2b4.css.map",
-    "main.a71e4dd2.js.map": "/static/js/main.a71e4dd2.js.map"
+    "main.css": "/Supreme-Court-Crossword/static/css/main.3c0fb2b4.css",
+    "main.js": "/Supreme-Court-Crossword/static/js/main.09ea4b1d.js",
+    "index.html": "/Supreme-Court-Crossword/index.html",
+    "main.3c0fb2b4.css.map": "/Supreme-Court-Crossword/static/css/main.3c0fb2b4.css.map",
+    "main.09ea4b1d.js.map": "/Supreme-Court-Crossword/static/js/main.09ea4b1d.js.map"
   },
   "entrypoints": [
     "static/css/main.3c0fb2b4.css",
-    "static/js/main.a71e4dd2.js"
+    "static/js/main.09ea4b1d.js"
   ]
 }
